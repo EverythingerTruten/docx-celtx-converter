@@ -16,8 +16,8 @@ current_time_iso = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 print("Select the file you want to convert")
 root = tk.Tk()
-input_path = filedialog.askopenfilename(title='Select .docx or .celtx file for converting', filetypes=[("Word Documents, Celtx files", "*.docx *.celtx"), ("Word Documents", "*.docx"), ("Celtx files", "*.celtx")])
 root.withdraw()
+input_path = filedialog.askopenfilename(title='Select .docx or .celtx file for converting', filetypes=[("Word Documents, Celtx files", "*.docx *.celtx"), ("Word Documents", "*.docx"), ("Celtx files", "*.celtx")])
 
 screenplay_filename = os.path.basename(input_path)
 screenplay_title = screenplay_filename.split('.')[0]
@@ -321,6 +321,8 @@ if file_format == 'docx':
       zipf.close()
 
   print(f"Succesfully created {screenplay_title}.celtx")
+
+
 elif file_format == 'celtx':
   print("Converting .celtx to .docx")
   docx_path = input_path.replace('.celtx', '.docx')
@@ -354,7 +356,11 @@ elif file_format == 'celtx':
   doc = Document()
 
   for p in soup.find_all("p"):
-      class_name = p.get("class", [None])[0]  # Get first class if multiple
+      class_name = p.get("class")
+      if class_name:
+        class_name = class_name[0]
+      else:
+        class_name = "action"  # Default to "action" formatting if no class is found
       text = p.get_text(strip=True)
       if class_name and text:
           paragraph = doc.add_paragraph(text)
